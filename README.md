@@ -19,13 +19,8 @@
 - Соблюден принцип DRY
 
 ## Запуск тестов
-\`\`\`bash
 npm install
-npm test
-\`\`\`
 
-## Структура проекта
-- \`jest.config.js\` - конфигурация Jest без глобальных тайм-аутов
-- \`gh.test.js\` - тесты с индивидуальными тайм-аутами
-- \`jest-puppeteer.config.js\` - конфигурация Puppeteer
-- \`package.json\` - зависимости
+npm test
+
+
