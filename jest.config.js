@@ -1,4 +1,4 @@
 ﻿module.exports = {
-    verbose: true,
-    preset: "jest-puppeteer"
+    verbose: true
+    // Без preset: "jest-puppeteer" и без глобальных таймаутов
 };

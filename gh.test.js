@@ -1,28 +1,53 @@
-﻿let page;
+﻿const puppeteer = require('puppeteer');
 
-beforeEach(async () => {
-  page = await browser.newPage();
-  await page.goto("https://github.com/team");
+// Устанавливаем глобальный таймаут для всех тестов и хуков
+jest.setTimeout(60000);
+
+let browser;
+let page;
+
+// Глобальный beforeAll - запуск браузера один раз для всех тестов
+beforeAll(async () => {
+  browser = await puppeteer.launch({
+    headless: false,
+    defaultViewport: null,
+    args: ['--start-maximized']
+  });
 });
 
-afterEach(() => {
-  page.close();
+// Глобальный afterAll - закрытие браузера после всех тестов
+afterAll(async () => {
+  if (browser) {
+    await browser.close();
+  }
 });
 
 // ОРИГИНАЛЬНЫЕ ТЕСТЫ с индивидуальными тайм-аутами
 describe("Github page tests", () => {
+  // beforeEach для этой группы тестов - открываем конкретную страницу
+  beforeEach(async () => {
+    page = await browser.newPage();
+    await page.goto("https://github.com/team", { waitUntil: 'networkidle2' });
+  });
+
+  // afterEach для этой группы тестов - закрываем страницу
+  afterEach(async () => {
+    if (page && !page.isClosed()) {
+      await page.close();
+    }
+  });
+
   test("Team page loads", async () => {
     const title = await page.title();
-    expect(title).toBeTruthy(); // Упрощаем проверку
-  }, 60000);
+    expect(title).toBeTruthy();
+  });
 
   test("The first link attribute", async () => {
     const actual = await page.$eval("a", link => link.getAttribute('href'));
     expect(actual).toEqual("#start-of-content");
-  }, 40000);
+  });
 
   test("The page contains button with Get started", async () => {
-    // Ищем любую кнопку с текстом Get started
     const buttons = await page.$$('button, a');
     let found = false;
 
@@ -35,61 +60,66 @@ describe("Github page tests", () => {
     }
 
     expect(found).toBe(true);
-  }, 50000);
+  });
 });
 
 // НОВЫЕ ТЕСТЫ для других страниц
 describe("GitHub Features page tests", () => {
-  let featuresPage;
-
-  // Увеличиваем тайм-аут для хука beforeEach
+  // beforeEach для этой группы тестов - открываем конкретную страницу
   beforeEach(async () => {
-    featuresPage = await browser.newPage();
-    await featuresPage.goto("https://github.com/features", { timeout: 30000 });
-  }, 10000); // Тайм-аут 10 секунд для хука
+    page = await browser.newPage();
+    await page.goto("https://github.com/features", { waitUntil: 'networkidle2' });
+  });
 
-  afterEach(() => {
-    featuresPage.close();
+  // afterEach для этой группы тестов - закрываем страницу
+  afterEach(async () => {
+    if (page && !page.isClosed()) {
+      await page.close();
+    }
   });
 
   test("Features page has title", async () => {
-    const title = await featuresPage.title();
+    const title = await page.title();
     expect(title).toContain("Features");
-  }, 60000);
+  });
 });
 
 describe("GitHub Pricing page tests", () => {
-  let pricingPage;
-
+  // beforeEach для этой группы тестов - открываем конкретную страницу
   beforeEach(async () => {
-    pricingPage = await browser.newPage();
-    await pricingPage.goto("https://github.com/pricing", { timeout: 30000 });
-  }, 10000);
+    page = await browser.newPage();
+    await page.goto("https://github.com/pricing", { waitUntil: 'networkidle2' });
+  });
 
-  afterEach(() => {
-    pricingPage.close();
+  // afterEach для этой группы тестов - закрываем страницу
+  afterEach(async () => {
+    if (page && !page.isClosed()) {
+      await page.close();
+    }
   });
 
   test("Pricing page has title", async () => {
-    const title = await pricingPage.title();
+    const title = await page.title();
     expect(title).toContain("Pricing");
-  }, 60000);
+  });
 });
 
 describe("GitHub Explore page tests", () => {
-  let explorePage;
-
+  // beforeEach для этой группы тестов - открываем конкретную страницу
   beforeEach(async () => {
-    explorePage = await browser.newPage();
-    await explorePage.goto("https://github.com/explore", { timeout: 30000 });
-  }, 10000);
+    page = await browser.newPage();
+    await page.goto("https://github.com/explore", { waitUntil: 'networkidle2' });
+  });
 
-  afterEach(() => {
-    explorePage.close();
+  // afterEach для этой группы тестов - закрываем страницу
+  afterEach(async () => {
+    if (page && !page.isClosed()) {
+      await page.close();
+    }
   });
 
   test("Explore page has title", async () => {
-    const title = await explorePage.title();
+    const title = await page.title();
     expect(title).toContain("Explore");
-  }, 60000);
+  });
 });
